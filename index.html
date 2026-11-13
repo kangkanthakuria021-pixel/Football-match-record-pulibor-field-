@@ -1,0 +1,241 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Score Recorder</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #eef2f3;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .container {
+            background: white;
+            max-width: 450px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 12px #aaa;
+        }
+
+        h1 { color: #087f5b; }
+
+        input, select, button {
+            width: 90%;
+            padding: 12px;
+            margin: 8px;
+            border-radius: 7px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: #087f5b;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .score {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 25px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .result {
+            background: #e6fcf5;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .goal {
+            background: #f1f3f5;
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 7px;
+            text-align: left;
+        }
+
+        .reset {
+            background: #e03131;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>⚽ Football Score Recorder</h1>
+
+    <h3>Match Details</h3>
+
+    <input id="team1" placeholder="Enter Team 1 Name">
+    <input id="team2" placeholder="Enter Team 2 Name">
+
+    <div class="score">
+        <div>
+            <div id="name1">Team 1</div>
+            <span id="score1">0</span>
+        </div>
+
+        <div>VS</div>
+
+        <div>
+            <div id="name2">Team 2</div>
+            <span id="score2">0</span>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Record a Goal</h3>
+
+    <input id="scorer" placeholder="Goal Scorer Name">
+
+    <select id="team">
+        <option value="1">Team 1</option>
+        <option value="2">Team 2</option>
+    </select>
+
+    <input id="minute" type="number"
+        placeholder="Goal Minute (e.g. 25)" min="0">
+
+    <button onclick="addGoal()">+ Add Goal</button>
+
+    <h3>Goal History</h3>
+
+    <div id="history">
+        No goals recorded yet.
+    </div>
+
+    <hr>
+
+    <h3>🏆 Match Result</h3>
+
+    <div class="result" id="winner">
+        Match in Progress
+    </div>
+
+    <button class="reset" onclick="resetMatch()">
+        Reset Match
+    </button>
+
+</div>
+
+<script>
+
+let score1 = 0;
+let score2 = 0;
+
+function updateNames() {
+    let t1 = document.getElementById("team1").value.trim();
+    let t2 = document.getElementById("team2").value.trim();
+
+    document.getElementById("name1").innerText = t1 || "Team 1";
+    document.getElementById("name2").innerText = t2 || "Team 2";
+}
+
+document.getElementById("team1").addEventListener("input", updateNames);
+document.getElementById("team2").addEventListener("input", updateNames);
+
+function addGoal() {
+
+    let scorer = document.getElementById("scorer").value.trim();
+    let team = document.getElementById("team").value;
+    let minute = document.getElementById("minute").value;
+
+    if (!document.getElementById("team1").value.trim() ||
+        !document.getElementById("team2").value.trim()) {
+        alert("Please enter both team names!");
+        return;
+    }
+
+    if (!scorer || minute === "" || Number(minute) < 0) {
+        alert("Please enter scorer name and valid minute!");
+        return;
+    }
+
+    let teamName = team == "1"
+        ? document.getElementById("team1").value.trim()
+        : document.getElementById("team2").value.trim();
+
+    if (team == "1") {
+        score1++;
+    } else {
+        score2++;
+    }
+
+    document.getElementById("score1").innerText = score1;
+    document.getElementById("score2").innerText = score2;
+
+    let history = document.getElementById("history");
+
+    if (history.innerText === "No goals recorded yet.") {
+        history.innerHTML = "";
+    }
+
+    let goal = document.createElement("div");
+    goal.className = "goal";
+    goal.textContent = "⚽ " + minute + "' - " +
+        scorer + " (" + teamName + ")";
+
+    history.appendChild(goal);
+
+    document.getElementById("scorer").value = "";
+    document.getElementById("minute").value = "";
+
+    updateWinner();
+}
+
+function updateWinner() {
+
+    let t1 = document.getElementById("team1").value.trim();
+    let t2 = document.getElementById("team2").value.trim();
+
+    let result = "";
+
+    if (score1 > score2) {
+        result = "🏆 " + t1 + " Wins!";
+    } else if (score2 > score1) {
+        result = "🏆 " + t2 + " Wins!";
+    } else {
+        result = "🤝 Match Draw!";
+    }
+
+    document.getElementById("winner").innerText = result;
+}
+
+function resetMatch() {
+
+    if (!confirm("Are you sure you want to reset the match?")) {
+        return;
+    }
+
+    score1 = 0;
+    score2 = 0;
+
+    document.getElementById("score1").innerText = "0";
+    document.getElementById("score2").innerText = "0";
+    document.getElementById("history").innerHTML =
+        "No goals recorded yet.";
+    document.getElementById("winner").innerText =
+        "Match in Progress";
+
+    document.getElementById("scorer").value = "";
+    document.getElementById("minute").value = "";
+}
+
+</script>
+
+</body>
+</html>
